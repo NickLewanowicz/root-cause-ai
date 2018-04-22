@@ -1,6 +1,23 @@
 <div class="object-browser layout-row">
-    <div class="input-fields container flex-20">
-        test
+    <div class="panel container flex-20">
+        <div class="input-fields">
+            <h3>Analysis Input</h3>
+            Selected Relationship:
+            {{#paper-menu as |menu|}}
+                {{#menu.trigger width=4}}
+                    {{#paper-button}}{{if root root.label model.[0].label}}{{/paper-button}}
+                {{/menu.trigger}}
+                {{#menu.content width=2 as |content|}}
+                    {{#each model as |item|}}
+                    {{#content.menu-item onClick=(action 'updateRoot' item)}}
+                        {{paper-icon item.label}}
+                        <span>{{item.label}}</span>
+                    {{/content.menu-item}}
+                    {{/each}}
+                {{/menu.content}}
+            {{/paper-menu}}
+        </div>
+        
     </div>
     <div class="object-list layout-column container flex-80">
         <div class="graph-container container-segment layout-row">
@@ -20,7 +37,7 @@
             {{/each}}
             {{/visjs-network}}
             {{#paper-list class="scroll-div flex-30"}}
-            {{#paper-subheader}}{{allPaths.length}} Paths from '{{startNode}}' to '{{endNode}}' ({{pathStats.iterations}}:{{pathStats.time}}s){{/paper-subheader}}
+            {{#paper-subheader}}{{allPaths.length}} Paths from '{{root.source}}' to '{{root.target}}' ({{pathStats.iterations}}:{{pathStats.time}}s){{/paper-subheader}}
             {{#each allPaths as |path|}}
                 {{#paper-item class="md-3-line"}}
 
@@ -51,5 +68,4 @@
         
     </div>
 </div>
-{{outlet}}
 {{yield}}
