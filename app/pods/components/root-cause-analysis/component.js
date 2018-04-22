@@ -21,19 +21,19 @@ export default Component.extend({
 
         while(curr != null){
             for(let j = 0; j < edges.length; j++){
-                if(edges[j].source == curr[curr.length-1] && !curr.includes(edges[j].target)){
+                if(edges[j].source == curr[curr.length-1] && edges[j].target != startNode &&  !curr.includes(edges[j].target)){
                     let newPath = curr.concat(edges[j].target)
-                    if(edges[j].target == endNode && paths.toString().indexOf(curr.toString()) < 0){
-                        paths[paths.length] = this.dup(newPath)
+                    if(edges[j].target == endNode && edges[j].target != startNode && paths.toString().indexOf(curr.toString()) < 0){
+                        paths[paths.length] = newPath.copy()
                     }else{
-                        open[open.length] = this.dup(newPath)
+                        open[open.length] = newPath.copy()
                     }
-                }else if(edges[j].target == curr[curr.length-1] && !curr.includes(edges[j].source)){
+                }else if(edges[j].target == curr[curr.length-1] && edges[j].source != startNode && !curr.includes(edges[j].source)){
                     let newPath = curr.concat(edges[j].source)
                     if(edges[j].source == endNode && paths.toString().indexOf(curr.toString()) < 0){
-                        paths[paths.length] = this.dup(newPath)
+                        paths[paths.length] = newPath.copy()
                     }else{
-                        open[open.length] = this.dup(newPath)
+                        open[open.length] = newPath.copy()
                     }
                 }
                 iterations++
@@ -45,8 +45,8 @@ export default Component.extend({
             }
         }
 
-        this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
-
+        //this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
+        console.log(paths)
         return paths
     }),
 
