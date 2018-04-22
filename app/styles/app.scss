@@ -1,1 +1,18 @@
 @import 'ember-paper';
+
+.scroll-div {
+    height: 50VH;
+    overflow-y: auto;
+}
+
+.graph-view {
+    height: 50VH;
+    .network-canvas {
+        height: 100%;
+    }
+}
+
+.container {
+    box-shadow: 0 0 10px 0 black;
+    margin: 0.5rem;
+}
