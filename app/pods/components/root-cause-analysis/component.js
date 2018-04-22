@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+//import { timeout } from 'ember-concurrency';
 //import { A } from '@ember/array';
 
 import moment from 'moment';
@@ -8,37 +9,39 @@ export default Component.extend({
     computeToast: false,
     editEdge: false,
     recompute: false,
+    regenGraph: true,
     pathDetails: false,
-    numNodes: 10,
-    branching: 2,
+    numNodes: 20,
+    branching: 1.5,
 
-    nodes: computed( 'model', function() {
+    generateNodes() {
         let nodes = []
         for( let i = this.get('numNodes'); i > 0; i--){
             nodes.push({"id": i.toString()})
         }
-        return nodes
-    }),
+        this.set('nodes',nodes)
+    },
 
-    edges: computed( 'nodes', function() {
+    generateEdges() {
         const branching = this.get('branching')
         const numNodes = this.get('numNodes')
 
         let edges = []
-        let usedPairs = new Set()
+        let usedIds = new Set()
         for(let i = 0; i < branching*numNodes; i++){
-            let source = i % numNodes
+            let source = (i % numNodes) + 1
             let target = (Math.floor(Math.random() * numNodes) + 1 )
-            while(usedPairs.has(source + '-' + target) || source == target){
+            while(usedIds.has(source + '-' + target) || usedIds.has(target + '-' + source) || source == target){
                 target = (Math.floor(Math.random() * numNodes) + 1 )
             }
-            usedPairs.add(source + '-' + target)
+
+            usedIds.add(source + '-' + target)
             
-            edges.push({'id': source + '-' + target ,'label': source + '-' + target, source, target, 'data': 0})
+            edges.push({'id': source + '-' + target ,'label': source + '-' + target, source, target, 'data': (Math.floor(Math.random() * 3) + 1 )})
         }
         this.send('updateRoot', edges[0])
-        return edges
-    }),
+        this.set('edges', edges)
+    },
     
     /* 
      * Description: Map of edge id's and data to be querried by computedPaths
@@ -59,7 +62,7 @@ export default Component.extend({
      * Complexity: Exponential time complexity (doesnt scale)
      * Purpose: This is meant to allow comparison from the heuristic based solution to caclulate successfull root cause analysis
     */
-    allPaths: computed( 'root', function() {
+    genAllPaths() {
         const startTime = moment.now()
         let iterations = 0
         
@@ -98,15 +101,15 @@ export default Component.extend({
             }
         }
         this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
-        return paths.sort(function(a, b) { return a.length - b.length})
-    }),
+        this.set('allPaths', paths.sort(function(a, b) { return a.length - b.length}))
+    },
 
     /* 
      * Description: Array of objects representing all paths from startNode to endNode
      * Complexity: Linear time complexity
      * Purpose: This will be triggered with updates to the allPaths, purpose is to generate goodness scores for paths 
     */
-    computedPaths: computed( 'allPaths', function() {
+    genComputedPaths() {
         const allPaths = this.get('allPaths')
         const objectMap = this.get('objectMap')
         const root = this.get('root')
@@ -148,8 +151,12 @@ export default Component.extend({
             computedPaths.push(computedPath)
             
         }
-        return computedPaths
-    }),
+        this.set('computedPaths', computedPaths) 
+    },
+
+    createEvent() {
+        
+    },
 
     setStats (stats) {
         let old = this.get('pathStats')
@@ -158,10 +165,19 @@ export default Component.extend({
             this.set('pathStats', stats)
         }
     },
+    init() {
+        this._super(...arguments)
+        this.generateNodes()
+        this.generateEdges()
+        this.genAllPaths()
+        this.genComputedPaths()
+        
+    },
 
     actions: {
         updateRoot (item) {
             this.set('root', item)
+            
         },
         openModal(item) {
             this.set('editingEdge', item)
@@ -179,13 +195,15 @@ export default Component.extend({
                         this.set('edges'+ [i],item)
                     }
                 }
-                this.toggleProperty('recompute')
+                this.genAllPaths()
+                this.genComputedPaths()
             }
             
             
         },
         toggleRecompute() {
-            this.toggleProperty('recompute')
+            this.genAllPaths()
+            this.genComputedPaths()
         },
         togglePathDetails(selectedItem) {
             this.set('selectedItem', selectedItem)
@@ -196,6 +214,14 @@ export default Component.extend({
         },
         edgeAdded(edge) {
             return edge
+        },
+        regenGraph() {
+            this.set('nodes', '')
+            this.set('edges', '')
+            this.generateNodes()
+            this.generateEdges()
+            this.genAllPaths()
+            this.genComputedPaths()
         }
         
     }

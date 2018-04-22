@@ -6,7 +6,7 @@
                 <span>Selected Relationship:
                 {{#paper-menu as |menu|}}
                     {{#menu.trigger width=4}}
-                        {{#paper-button}}{{edges.[0].label}}{{/paper-button}}
+                        {{#paper-button}}{{if root root.label edges.[0].label}}{{/paper-button}}
                     {{/menu.trigger}}
                     {{#menu.content width=2 as |content|}}
                         {{#each edges as |item|}}
@@ -18,15 +18,16 @@
                     {{/menu.content}}
                 {{/paper-menu}}</span>
             </span>
-            Number of Nodes: {{paper-input placeholder=numNodes autofocus=false value=numNodes onChange=(action (mut numNodes))}}
-            Branching: {{paper-input placeholder=branching autofocus=false value=branching onChange=(action (mut branching))}}
+            Number of Nodes: {{paper-input type="number" max="25" errorMessages=(hash max="Enter 25 or less.") placeholder=numNodes autofocus=false value=numNodes onChange=(action (mut numNodes))}}
+            Branching: {{paper-input type="number" max="2" placeholder=branching autofocus=false value=branching onChange=(action (mut branching))}}
+            {{#paper-button class="layout layout-align-end" raised=true onClick=(action 'regenGraph') primary=false}}Regenerate Nodes{{/paper-button}}
             {{#paper-button class="layout layout-align-end" raised=true onClick=(action 'toggleRecompute') primary=true}}Recompute{{/paper-button}}
         </div>
         
     </div>
     <div class="object-list layout-column container flex-80">
         <div class="graph-container container-segment flex-50 layout-row">
-            {{#visjs-network addEdges=true edgeAdded=(action 'edgeAdded') class="graph-view flex-80"}}
+            {{#visjs-network class="graph-view flex-80"}}
                 {{#each nodes as |node|}}
                 {{visjs-node nId=node.id label=node.id color=(if (or (eq root.source node.id) (eq root.target node.id)) '#ff0000' '#97c2fc')}}
                 {{/each}}
@@ -63,7 +64,7 @@
                 
                 <div class="md-list-item-text">
                     <h3>Network Performance Object:<b>{{item.id}}</b></h3>
-                    <p>Source: {{item.source}} Target {{item.target}}</p>
+                    <p>Source: {{item.source}} Target: {{item.target}} Degredation: {{item.data}}</p>
                 </div>
                 {{/paper-item}}
             {{/each}}
@@ -84,21 +85,8 @@
 
     {{#paper-dialog-content}}
       <h2 class="md-title">Edit Edge '{{editingEdge.label}}'</h2>
-      <h2>Metrics:</h2>
-      {{#each editingEdge.data as |timestamp|}}
-        <div class="model-timestamp">
-        <h3>Timestamp: {{timestamp.timestamp}}</h3>
-        <h5>Delay</h5>
-        Crit: {{paper-input placeholder=timestamp.metrics.delayP95.critical autofocus=true value=timestamp.metrics.delayP95.critical onChange=(action (mut timestamp.metrics.delayP95.critical))}}
-        Maj: {{paper-input placeholder=timestamp.metrics.delayP95.major autofocus=true value=timestamp.metrics.delayP95.major onChange=(action (mut timestamp.metrics.delayP95.major))}}
-        <h5>Jitter</h5>
-        Crit: {{paper-input placeholder=timestamp.metrics.jitterP95.critical autofocus=true value=timestamp.metrics.jitterP95.critical onChange=(action (mut timestamp.metrics.jitterP95.critical))}}
-        Maj: {{paper-input placeholder=timestamp.metrics.jitterP95.major autofocus=true value=timestamp.metrics.jitterP95.major onChange=(action (mut timestamp.metrics.jitterP95.major))}}
-        <h5>PacketLost</h5>
-        Crit: {{paper-input placeholder=timestamp.metrics.packetsLost.critical autofocus=true value=timestamp.metrics.packetsLost.critical onChange=(action (mut timestamp.metrics.packetsLost.critical))}}
-        Maj: {{paper-input placeholder=timestamp.metrics.packetsLost.major autofocus=true value=timestamp.metrics.packetsLost.major onChange=(action (mut timestamp.metrics.packetsLost.major))}}
-        </div>
-      {{/each}}
+      <h2>Data:</h2>
+      {{paper-input placeholder=editingEdge.data autofocus=true value=editingEdge.data onChange=(action (mut editingEdge.data))}}
     {{/paper-dialog-content}}
 
     {{#paper-dialog-actions class="layout-row"}}
