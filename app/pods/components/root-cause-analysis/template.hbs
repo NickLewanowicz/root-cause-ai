@@ -2,8 +2,8 @@
     <div class="input-fields container flex-20">
         test
     </div>
-    <div class="object-list layout-column flex-80">
-        <div class="graph-container container layout-row">
+    <div class="object-list layout-column container flex-80">
+        <div class="graph-container container-segment layout-row">
             {{#visjs-network class="graph-view flex-80"}}
                 {{visjs-node nId="0" label="0" color='#ff0000'}}
                 {{visjs-node nId="1" label="1" color='#ff0000'}}
@@ -19,21 +19,23 @@
                 {{visjs-edge from=x.source to=x.target color='#C7F110'}}
             {{/each}}
             {{/visjs-network}}
-            {{#paper-list class="scroll-div flex-20"}}
-            {{#paper-subheader}}All Paths{{/paper-subheader}}
+            {{#paper-list class="scroll-div flex-30"}}
+            {{#paper-subheader}}{{allPaths.length}} Paths from '{{startNode}}' to '{{endNode}}'{{/paper-subheader}}
             {{#each allPaths as |path|}}
                 {{#paper-item class="md-3-line"}}
-                
                 <div class="md-list-item-text">
-                    <h3>Network Performance Object:<b>{{item.id}}</b></h3>
-                    <p>Source: {{item.source}} Target {{item.target}}</p>
+                    <p>[
+                    {{#each path as |item|}}
+                    {{item}},
+                    {{/each}}
+                    ]</p>
                 </div>
                 {{/paper-item}}
             {{/each}}
         {{/paper-list}}
         </div>
         
-        {{#paper-list class="scroll-div container flex-50"}}
+        {{#paper-list class="scroll-div flex-50"}}
             {{#paper-subheader}}Mock Network Events{{/paper-subheader}}
             {{#each model as |item|}}
                 {{#paper-item class="md-3-line"}}
