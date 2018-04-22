@@ -3,6 +3,7 @@
 module.exports = function(environment) {
   let ENV = {
     modulePrefix: 'root-cause-ai',
+    podModulePrefix: 'root-cause-ai/pods',
     environment,
     rootURL: '/',
     locationType: 'auto',
