@@ -56,7 +56,7 @@
         {{#paper-list class="scroll-div flex-50"}}
             {{#paper-subheader}}Mock Network Events{{/paper-subheader}}
             {{#each model as |item|}}
-                {{#paper-item class="md-3-line"}}
+                {{#paper-item onClick=(action 'openModal' item) class="md-3-line"}}
                 
                 <div class="md-list-item-text">
                     <h3>Network Performance Object:<b>{{item.id}}</b></h3>
@@ -68,4 +68,43 @@
         
     </div>
 </div>
+
+{{#if computeToast}}
+  {{#paper-toast capsule=true onClose=(action "toggleToast") as |toast|}}
+    {{#toast.text}}Analysis Complete{{/toast.text}}
+    {{#paper-button accent=true onClick=(action "toggleToast")}}Undo{{/paper-button}}
+  {{/paper-toast}}
+{{/if}}
+
+{{#if editEdge}}
+  {{#paper-dialog fullscreen=true onClose=(action "closeModal" editingEdge "cancel")}}
+
+    {{#paper-dialog-content}}
+      <h2 class="md-title">Edit Edge '{{editingEdge.label}}'</h2>
+      <h2>Metrics:</h2>
+      {{#each editingEdge.data as |timestamp|}}
+        <div class="model-timestamp">
+        <h3>Timestamp: {{timestamp.timestamp}}</h3>
+        <h5>Delay</h5>
+        Crit: {{paper-input placeholder=timestamp.metrics.delayP95.critical autofocus=true value=timestamp.metrics.delayP95.critical onChange=(action (mut timestamp.metrics.delayP95.critical))}}
+        Maj: {{paper-input placeholder=timestamp.metrics.delayP95.major autofocus=true value=timestamp.metrics.delayP95.major onChange=(action (mut timestamp.metrics.delayP95.major))}}
+        <h5>Jitter</h5>
+        Crit: {{paper-input placeholder=timestamp.metrics.jitterP95.critical autofocus=true value=timestamp.metrics.jitterP95.critical onChange=(action (mut timestamp.metrics.jitterP95.critical))}}
+        Maj: {{paper-input placeholder=timestamp.metrics.jitterP95.major autofocus=true value=timestamp.metrics.jitterP95.major onChange=(action (mut timestamp.metrics.jitterP95.major))}}
+        <h5>PacketLost</h5>
+        Crit: {{paper-input placeholder=timestamp.metrics.packetsLost.critical autofocus=true value=timestamp.metrics.packetsLost.critical onChange=(action (mut timestamp.metrics.packetsLost.critical))}}
+        Maj: {{paper-input placeholder=timestamp.metrics.packetsLost.major autofocus=true value=timestamp.metrics.packetsLost.major onChange=(action (mut timestamp.metrics.packetsLost.major))}}
+        </div>
+      {{/each}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "closeModal" editingEdge "cancel")}}Cancel{{/paper-button}}
+      {{#paper-button primary=true onClick=(action "closeModal" editingEdge "save")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+
+  {{/paper-dialog}}
+{{/if}}
+
 {{yield}}

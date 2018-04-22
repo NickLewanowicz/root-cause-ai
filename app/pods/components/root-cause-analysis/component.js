@@ -5,6 +5,9 @@ import { computed } from '@ember/object';
 import moment from 'moment';
 
 export default Component.extend({
+    computeToast: false,
+    editEdge: false,
+    recompute: false,
     // /* 
     //  * Description: Root signature is the 'cause signature' we are going to be comparing all other paths to
     //  * Complexity: constant time
@@ -24,7 +27,7 @@ export default Component.extend({
      * Complexity: linear time to construct
      * Purpose: This is meant to allow contant time access to this information
     */
-    objectMap: computed( 'model', function() {
+    objectMap: computed( 'model.@each', function() {
         const edges = this.get('model')
         let objectMap = new Map()
         for(const edge of edges){
@@ -38,7 +41,7 @@ export default Component.extend({
      * Complexity: Exponential time complexity (doesnt scale)
      * Purpose: This is meant to allow comparison from the heuristic based solution to caclulate successfull root cause analysis
     */
-    allPaths: computed( 'model', 'root', function() {
+    allPaths: computed( 'model', 'root', 'recompute', function() {
         const startTime = moment.now()
         let iterations = 0
         
@@ -106,12 +109,12 @@ export default Component.extend({
             computedPaths.push(computedPath)
 
         }
-        console.log(computedPaths)
         return computedPaths
     }),
 
     setStats (stats) {
         let old = this.get('pathStats')
+        this.set('computeToast', true)
         if(old != stats){
             this.set('pathStats', stats)
         }
@@ -120,6 +123,31 @@ export default Component.extend({
     actions: {
         updateRoot (item) {
             this.set('root', item)
+        },
+        openModal(item) {
+            this.set('editingEdge', item)
+            this.toggleProperty('editEdge')
+
+        },
+        closeModal(item, action) {
+            //This is just to force the CP to recompute
+            item.type = item.type == 'arrow' ? 'line' : 'arrow'
+            this.toggleProperty('editEdge')
+            let model = this.get('model')
+            if(action == 'save'){
+                for(let i = 0; i<model.length; i++){
+                    if(model[i].label === item.label){
+                        this.set('model'+ [i],item)
+                    }
+                }
+                this.toggleProperty('recompute')
+            }
+            
+            
+        },
+        toggleToast() {
+            this.toggleProperty('computeToast')
         }
+        
     }
 });
