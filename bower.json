@@ -1,0 +1,6 @@
+{
+  "name": "root-cause-ai",
+  "dependencies": {
+    "vis": "^4.16.0"
+  }
+}
