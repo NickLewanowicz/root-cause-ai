@@ -5,30 +5,47 @@ import { computed } from '@ember/object';
 import moment from 'moment';
 
 export default Component.extend({
-    startNode: 0,
-    endNode: 1,
+    // /* 
+    //  * Description: Root signature is the 'cause signature' we are going to be comparing all other paths to
+    //  * Complexity: constant time
+    //  * Purpose: Not sure if this is 100% necessary as of now
+    // */
+    // rootSignature: computed('startNode', 'endNode', function() {
+    //      const startNode = this.get('startNode')
+    //      const endNode = this.get('endNode')
 
+    //      const rootEdge = this.get('objectMap').get(startNode + '-' + endNode)
+
+    //     for(const )
+    //     }),
+
+    /* 
+     * Description: Map of edge id's and data to be querried by computedPaths
+     * Complexity: linear time to construct
+     * Purpose: This is meant to allow contant time access to this information
+    */
     objectMap: computed( 'model', function() {
         const edges = this.get('model')
         let objectMap = new Map()
         for(const edge of edges){
-            objectMap(edge.id, edge.data)
+            objectMap.set(edge.id, edge)
         }
         return objectMap
     }),
+
     /* 
      * Description: 2D array of all paths that connect startNode and endNode
      * Complexity: Exponential time complexity (doesnt scale)
      * Purpose: This is meant to allow comparison from the heuristic based solution to caclulate successfull root cause analysis
     */
-
-    allPaths: computed( 'model', function() {
+    allPaths: computed( 'model', 'root', function() {
         const startTime = moment.now()
         let iterations = 0
-
+        
         const edges = this.get('model')
-        const startNode = this.get('startNode')
-        const endNode = this.get('endNode')
+        const root = this.get('root') || this.get('objectMap').get('0-1')
+        const startNode = root.source
+        const endNode = root.target
 
         let open = []
         let paths = []
@@ -69,13 +86,18 @@ export default Component.extend({
      * Complexity: Linear time complexity
      * Purpose: This will be triggered with updates to the allPaths, purpose is to generate goodness scores for paths 
     */
-
     computedPaths: computed( 'allPaths', function() {
         const allPaths = this.get('allPaths')
         let computedPaths = []
 
         for(const path of allPaths){
-            let computedPath = {}
+            let computedPath = []
+            for(const node of path){
+                
+                computedPath.push({node})
+            }
+            computedPaths.push(computedPath)
+
         }
         return computedPaths
     }),
@@ -84,6 +106,12 @@ export default Component.extend({
         let old = this.get('pathStats')
         if(old != stats){
             this.set('pathStats', stats)
+        }
+    },
+
+    actions: {
+        updateRoot (item) {
+            this.set('root', item)
         }
     }
 });

@@ -3,6 +3,186 @@ import Route from '@ember/routing/route';
 export default Route.extend({
     model () {
         return [{
+            "id": "0-1",
+            "label": "0-1",
+            "source": "0",
+            "target": "1",
+            "size": 1,
+            "type": "arrow",
+            "data": [
+              {
+                "timestamp": 0,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 10,
+                    "major": 10
+                  },
+                  "jitterP95": {
+                    "critical": 10,
+                    "major": 10
+                  },
+                  "packetsLost": {
+                    "critical": 10,
+                    "major": 10
+                  }
+                }
+              },
+              {
+                "timestamp": 30,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "jitterP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "packetsLost": {
+                    "critical": 0, 
+                    "major": 0
+                  }
+                }
+              },
+              {
+                "timestamp": 60,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "jitterP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "packetsLost": {
+                    "critical": 0, 
+                    "major": 0
+                  }
+                }
+              },
+              {
+                "timestamp": 90,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 10,
+                    "major": 10
+                  },
+                  "jitterP95": {
+                    "critical": 10,
+                    "major": 10
+                  },
+                  "packetsLost": {
+                    "critical": 10,
+                    "major": 10
+                  }
+                }
+              },
+              {
+                "timestamp": 120,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "jitterP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "packetsLost": {
+                    "critical": 0, 
+                    "major": 0
+                  }
+                }
+              },
+              {
+                "timestamp": 150,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "jitterP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "packetsLost": {
+                    "critical": 0, 
+                    "major": 0
+                  }
+                }
+              },
+              {
+                "timestamp": 180,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "jitterP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "packetsLost": {
+                    "critical": 0, 
+                    "major": 0
+                  }
+                }
+              },
+              {
+                "timestamp": 210,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 10,
+                    "major": 10
+                  },
+                  "jitterP95": {
+                    "critical": 10,
+                    "major": 10
+                  },
+                  "packetsLost": {
+                    "critical": 10,
+                    "major": 10
+                  }
+                }
+              },
+              {
+                "timestamp": 240,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "jitterP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "packetsLost": {
+                    "critical": 0, 
+                    "major": 0
+                  }
+                }
+              },
+              {
+                "timestamp": 270,
+                "metrics": {
+                  "delayP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "jitterP95": {
+                    "critical": 0, 
+                    "major": 0
+                  },
+                  "packetsLost": {
+                    "critical": 0, 
+                    "major": 0
+                  }
+                }
+              }
+            ]
+          },
+          {
             "id": "0-8",
             "label": "0-8",
             "source": "0",
@@ -2483,186 +2663,6 @@ export default Route.extend({
                   "packetsLost": {
                     "critical": 0, 
                     "major": 0
-                  }
-                }
-              },
-              {
-                "timestamp": 240,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "jitterP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "packetsLost": {
-                    "critical": 0, 
-                    "major": 0
-                  }
-                }
-              },
-              {
-                "timestamp": 270,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "jitterP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "packetsLost": {
-                    "critical": 0, 
-                    "major": 0
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "id": "0-1",
-            "label": "0-1",
-            "source": "0",
-            "target": "1",
-            "size": 1,
-            "type": "arrow",
-            "data": [
-              {
-                "timestamp": 0,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 10,
-                    "major": 10
-                  },
-                  "jitterP95": {
-                    "critical": 10,
-                    "major": 10
-                  },
-                  "packetsLost": {
-                    "critical": 10,
-                    "major": 10
-                  }
-                }
-              },
-              {
-                "timestamp": 30,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "jitterP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "packetsLost": {
-                    "critical": 0, 
-                    "major": 0
-                  }
-                }
-              },
-              {
-                "timestamp": 60,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "jitterP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "packetsLost": {
-                    "critical": 0, 
-                    "major": 0
-                  }
-                }
-              },
-              {
-                "timestamp": 90,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 10,
-                    "major": 10
-                  },
-                  "jitterP95": {
-                    "critical": 10,
-                    "major": 10
-                  },
-                  "packetsLost": {
-                    "critical": 10,
-                    "major": 10
-                  }
-                }
-              },
-              {
-                "timestamp": 120,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "jitterP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "packetsLost": {
-                    "critical": 0, 
-                    "major": 0
-                  }
-                }
-              },
-              {
-                "timestamp": 150,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "jitterP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "packetsLost": {
-                    "critical": 0, 
-                    "major": 0
-                  }
-                }
-              },
-              {
-                "timestamp": 180,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "jitterP95": {
-                    "critical": 0, 
-                    "major": 0
-                  },
-                  "packetsLost": {
-                    "critical": 0, 
-                    "major": 0
-                  }
-                }
-              },
-              {
-                "timestamp": 210,
-                "metrics": {
-                  "delayP95": {
-                    "critical": 10,
-                    "major": 10
-                  },
-                  "jitterP95": {
-                    "critical": 10,
-                    "major": 10
-                  },
-                  "packetsLost": {
-                    "critical": 10,
-                    "major": 10
                   }
                 }
               },
