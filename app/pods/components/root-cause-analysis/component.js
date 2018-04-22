@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+import { A } from '@ember/array';
 
 import moment from 'moment';
 
@@ -45,12 +46,17 @@ export default Component.extend({
             }
         }
 
-        //this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
-        console.log(paths)
-        return paths
+        this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
+        return paths.sort(function(a, b) {
+            return a.length - b.length || // sort by length, if equal then
+                   a.localeCompare(b);    // sort by dictionary order
+          });
     }),
 
     setStats (stats) {
-        this.set('pathStats', stats)
+        let old = this.get('pathStats')
+        if(old != stats){
+            this.set('pathStats', stats)
+        }
     }
 });
