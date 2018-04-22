@@ -88,17 +88,25 @@ export default Component.extend({
     */
     computedPaths: computed( 'allPaths', function() {
         const allPaths = this.get('allPaths')
+        const objectMap = this.get('objectMap')
         let computedPaths = []
 
         for(const path of allPaths){
             let computedPath = []
-            for(const node of path){
-                
-                computedPath.push({node})
+            computedPath.push({
+                'label': path[0], 
+                'data': objectMap.get(path[0] + '-' + path[1]) || objectMap.get(path[1] + '-' + path[0])
+            })
+            for(let i = 1; i <path.length; i++){
+                computedPath.push({
+                    'label': path[i], 
+                    'data': objectMap.get(path[i-1] + '-' + path[i]) || objectMap.get(path[i] + '-' + path[i-1])
+                })
             }
             computedPaths.push(computedPath)
 
         }
+        console.log(computedPaths)
         return computedPaths
     }),
 

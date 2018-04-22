@@ -38,13 +38,13 @@
             {{/visjs-network}}
             {{#paper-list class="scroll-div flex-30"}}
             {{#paper-subheader}}{{allPaths.length}} Paths from '{{root.source}}' to '{{root.target}}' ({{pathStats.iterations}}:{{pathStats.time}}s){{/paper-subheader}}
-            {{#each allPaths as |path|}}
+            {{#each computedPaths as |path|}}
                 {{#paper-item class="md-3-line"}}
 
                 <div class="md-list-item-text">
                     <p>[
                     {{#each path as |item|}}
-                    {{item}},
+                    {{item.label}},
                     {{/each}}
                     ]</p>
                 </div>
