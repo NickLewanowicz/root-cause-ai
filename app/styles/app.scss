@@ -1,5 +1,8 @@
 @import 'ember-paper';
 
+.object-browser {
+    height: calc(100VH - 0.5rem);
+}
 .scroll-div {
     height: 50VH;
     overflow-y: auto;

@@ -1,61 +1,64 @@
 <div class="object-browser layout-row">
     <div class="panel container flex-20">
-        <div class="input-fields">
-            <h3>Analysis Input</h3>
-            Selected Relationship:
-            {{#paper-menu as |menu|}}
-                {{#menu.trigger width=4}}
-                    {{#paper-button}}{{if root root.label model.[0].label}}{{/paper-button}}
-                {{/menu.trigger}}
-                {{#menu.content width=2 as |content|}}
-                    {{#each model as |item|}}
-                    {{#content.menu-item onClick=(action 'updateRoot' item)}}
-                        {{paper-icon item.label}}
-                        <span>{{item.label}}</span>
-                    {{/content.menu-item}}
-                    {{/each}}
-                {{/menu.content}}
-            {{/paper-menu}}
+        <div class="input-fields layout-column layout-align-space-between">
+            <span class="flex-80">
+                <h3>Network Analysis Input</h3>
+                <span>Selected Relationship:
+                {{#paper-menu as |menu|}}
+                    {{#menu.trigger width=4}}
+                        {{#paper-button}}{{edges.[0].label}}{{/paper-button}}
+                    {{/menu.trigger}}
+                    {{#menu.content width=2 as |content|}}
+                        {{#each edges as |item|}}
+                        {{#content.menu-item onClick=(action 'updateRoot' item)}}
+                            {{paper-icon item.label}}
+                            <span>{{item.label}}</span>
+                        {{/content.menu-item}}
+                        {{/each}}
+                    {{/menu.content}}
+                {{/paper-menu}}</span>
+            </span>
+            Number of Nodes: {{paper-input placeholder=numNodes autofocus=false value=numNodes onChange=(action (mut numNodes))}}
+            Branching: {{paper-input placeholder=branching autofocus=false value=branching onChange=(action (mut branching))}}
+            {{#paper-button class="layout layout-align-end" raised=true onClick=(action 'toggleRecompute') primary=true}}Recompute{{/paper-button}}
         </div>
         
     </div>
     <div class="object-list layout-column container flex-80">
-        <div class="graph-container container-segment layout-row">
-            {{#visjs-network class="graph-view flex-80"}}
-                {{visjs-node nId="0" label="0" color='#ff0000'}}
-                {{visjs-node nId="1" label="1" color='#ff0000'}}
-                {{visjs-node nId="2" label="2"}}
-                {{visjs-node nId="3" label="3"}}
-                {{visjs-node nId="4" label="4"}}
-                {{visjs-node nId="5" label="5"}}
-                {{visjs-node nId="6" label="6"}}
-                {{visjs-node nId="7" label="7"}}
-                {{visjs-node nId="8" label="8"}}
-                {{visjs-node nId="9" label="9"}}
-            {{#each model as |x|}}
-                {{visjs-edge from=x.source to=x.target color='#C7F110'}}
-            {{/each}}
+        <div class="graph-container container-segment flex-50 layout-row">
+            {{#visjs-network addEdges=true edgeAdded=(action 'edgeAdded') class="graph-view flex-80"}}
+                {{#each nodes as |node|}}
+                {{visjs-node nId=node.id label=node.id color=(if (or (eq root.source node.id) (eq root.target node.id)) '#ff0000' '#97c2fc')}}
+                {{/each}}
+                {{#each edges as |edge|}}
+                {{visjs-edge from=edge.source to=edge.target color='#ff0000'}}
+                {{/each}}
             {{/visjs-network}}
             {{#paper-list class="scroll-div flex-30"}}
             {{#paper-subheader}}{{allPaths.length}} Paths from '{{root.source}}' to '{{root.target}}' ({{pathStats.iterations}}:{{pathStats.time}}s){{/paper-subheader}}
             {{#each computedPaths as |path|}}
-                {{#paper-item class="md-3-line"}}
+                {{#paper-item onClick=(action 'togglePathDetails' path) class="md-3-line"}}
 
                 <div class="md-list-item-text">
-                    <p>[
-                    {{#each path as |item|}}
-                    {{item.label}},
+                    <p>
+                    {{#each path as |item i|}}
+
+                    {{item.label}}
+                    {{#if (not (eq i (sub path.length 1)))}}
+                     ↔ 
+                    {{/if}}
                     {{/each}}
-                    ]</p>
+                    </p>
                 </div>
                 {{/paper-item}}
             {{/each}}
         {{/paper-list}}
         </div>
-        
+        {{paper-divider}}
+
         {{#paper-list class="scroll-div flex-50"}}
             {{#paper-subheader}}Mock Network Events{{/paper-subheader}}
-            {{#each model as |item|}}
+            {{#each edges as |item|}}
                 {{#paper-item onClick=(action 'openModal' item) class="md-3-line"}}
                 
                 <div class="md-list-item-text">
@@ -102,6 +105,54 @@
       <span class="flex"></span>
       {{#paper-button primary=true onClick=(action "closeModal" editingEdge "cancel")}}Cancel{{/paper-button}}
       {{#paper-button primary=true onClick=(action "closeModal" editingEdge "save")}}Save{{/paper-button}}
+    {{/paper-dialog-actions}}
+
+  {{/paper-dialog}}
+{{/if}}
+
+{{#if pathDetails}}
+  {{#paper-dialog fullscreen=true onClose=(action "togglePathDetails")}}
+    {{#paper-dialog-content}}
+      <h2 class="md-title">Path Details</h2>
+      {{#each selectedItem as |edge|}}
+        {{edge.data.label}}
+        <div class="model-timestamp">
+            {{#each edge.data.data as |timestamp|}}
+            
+            <div> Delay:
+                {{#if (gt timestamp.metrics.delayP95.major 0)}}
+                Major:{{timestamp.metrics.delayP95.major}}
+                {{/if}}
+                {{#if (gt timestamp.metrics.delayP95.critical 0)}}
+                Critical: {{timestamp.metrics.delayP95.critical}}
+                {{/if}}
+            </div>
+            <div> Jitter:
+                {{#if (gt timestamp.metrics.jitterP95.major 0)}}
+                Major:{{timestamp.metrics.jitterP95.major}}
+                {{/if}}
+                {{#if (gt timestamp.metrics.jitterP95.critical 0)}}
+                Critical: {{timestamp.metrics.jitterP95.critical}}
+                {{/if}}
+            </div>
+            <div> PacketLost:
+                {{#if (gt timestamp.metrics.packetsLost.major 0)}}
+                Major:{{timestamp.metrics.packetsLost.major}}
+                {{/if}}
+                {{#if (gt timestamp.metrics.packetsLost.critical 0)}}
+                Critical: {{timestamp.metrics.packetsLost.critical}}
+                {{/if}}
+            </div>
+            
+            {{/each}}
+    
+        </div>
+      {{/each}}
+    {{/paper-dialog-content}}
+
+    {{#paper-dialog-actions class="layout-row"}}
+      <span class="flex"></span>
+      {{#paper-button primary=true onClick=(action "togglePathDetails")}}Close{{/paper-button}}
     {{/paper-dialog-actions}}
 
   {{/paper-dialog}}
