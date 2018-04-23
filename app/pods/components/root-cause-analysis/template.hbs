@@ -20,6 +20,7 @@
             </span>
             Number of Nodes: {{paper-input type="number" max="25" errorMessages=(hash max="Enter 25 or less.") placeholder=numNodes autofocus=false value=numNodes onChange=(action (mut numNodes))}}
             Branching: {{paper-input type="number" max="2" placeholder=branching autofocus=false value=branching onChange=(action (mut branching))}}
+            Iteration Cap: {{paper-input type="number" max="10000" placeholder=iterationCap autofocus=false value=iterationCap onChange=(action (mut iterationCap))}}
             {{#paper-button class="layout layout-align-end" raised=true onClick=(action 'regenGraph') primary=false}}Regenerate Nodes{{/paper-button}}
             {{#paper-button class="layout layout-align-end" raised=true onClick=(action 'toggleRecompute') primary=true}}Recompute{{/paper-button}}
         </div>

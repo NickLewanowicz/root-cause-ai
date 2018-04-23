@@ -13,6 +13,7 @@ export default Component.extend({
     pathDetails: false,
     numNodes: 20,
     branching: 1.5,
+    iterationCap: 5000,
 
     generateNodes() {
         let nodes = []
@@ -131,6 +132,7 @@ export default Component.extend({
         const endNode = root.target
         const adjacencyList = this.getAdjacencyList(this.get('edges'))
         const objectMap = this.get('objectMap')
+        const iterationCap = this.get('iterationCap')
 
         let open = new Map([[0, [[startNode]]]])
         let closestKey = 0
@@ -138,8 +140,9 @@ export default Component.extend({
         let foundPaths = []
         let foundSet = new Set()
         let paths = []
+
         let curr = [startNode] //Not sure if needed
-        while (iterations<5000)  {
+        while (iterations<iterationCap)  {
             let newMoves = Array.from(adjacencyList[curr[curr.length-1]])
 
             while(newMoves.length > 0){
@@ -295,7 +298,7 @@ export default Component.extend({
         },
         toggleRecompute() {
             this.genAllPaths()
-            this.genComputedPaths()
+            this.genBestPaths()
         },
         togglePathDetails(selectedItem) {
             this.set('selectedItem', selectedItem)
@@ -308,8 +311,6 @@ export default Component.extend({
             return edge
         },
         regenGraph() {
-            this.set('nodes', '')
-            this.set('edges', '')
             this.generateNodes()
             this.generateEdges()
             this.genAllPaths()
