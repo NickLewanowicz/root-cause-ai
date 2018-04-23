@@ -37,7 +37,7 @@ export default Component.extend({
 
             usedIds.add(source + '-' + target)
             
-            edges.push({'id': source + '-' + target ,'label': source + '-' + target, source, target, 'data': (Math.floor(Math.random() * 3) + 1 )})
+            edges.push({'id': source + '-' + target ,'label': source + '-' + target, source, target, 'data': ((Math.round((Math.random() * 1)*10))/1000)})
         }
         this.send('updateRoot', edges[0])
         this.set('edges', edges)
@@ -73,6 +73,7 @@ export default Component.extend({
 
         let open = []
         let paths = []
+        let pathObjects = []
         let curr = [startNode] //Not sure if needed
 
         while(curr != null){
@@ -81,6 +82,7 @@ export default Component.extend({
                     let newPath = curr.concat(edges[j].target)
                     if(edges[j].target == endNode && edges[j].target != startNode && paths.toString().indexOf(curr.toString()) < 0){
                         paths[paths.length] = newPath.copy()
+                        pathObjects.push({path: newPath.copy(), degredationVariance: Math.abs(this.calcDegredation(newPath) - root.data)})
                     }else{
                         open[open.length] = newPath.copy()
                     }
@@ -88,6 +90,7 @@ export default Component.extend({
                     let newPath = curr.concat(edges[j].source)
                     if(edges[j].source == endNode && paths.toString().indexOf(curr.toString()) < 0){
                         paths[paths.length] = newPath.copy()
+                        pathObjects.push({path: newPath.copy(), degredationVariance: Math.abs(this.calcDegredation(newPath) - root.data)})
                     }else{
                         open[open.length] = newPath.copy()
                     }
@@ -100,8 +103,99 @@ export default Component.extend({
                 curr = null
             }
         }
+        console.log(pathObjects)
         this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
-        this.set('allPaths', paths.sort(function(a, b) { return a.length - b.length}))
+        this.set('allPaths', pathObjects.sort(function(a, b) { return a.degredationVariance - b.degredationVariance}))
+    },
+    possibleMoves(curr) {
+        
+    },
+    calcDegredation(path){
+        const root = this.get('root')
+        const startNode = root.source
+        const endNode = root.target
+        const objectMap = this.get('objectMap')
+        let degredation = 0
+        for(let i = 1; i < path.length; i++){
+            let edge = objectMap.get(path[i-1] + "-" + path[i]) || objectMap.get(path[i] + "-" + path[i-1])
+            degredation += edge.data
+        }
+        return degredation
+    },
+    genBestPaths() {
+        const startTime = moment.now()
+        let iterations = 0
+        
+        const root = this.get('root')
+        const startNode = root.source
+        const endNode = root.target
+        const adjacencyList = this.getAdjacencyList(this.get('edges'))
+        const objectMap = this.get('objectMap')
+
+        let open = new Map([[0, [[startNode]]]])
+        let closestKey = 0
+        let closed = new Set()
+        let foundPaths = []
+        let foundSet = new Set()
+        let paths = []
+        let curr = [startNode] //Not sure if needed
+        while (iterations<5000)  {
+            let newMoves = Array.from(adjacencyList[curr[curr.length-1]])
+
+            while(newMoves.length > 0){
+                let move = newMoves.pop()         
+                if(!curr.includes(move)){
+                    let edge = objectMap.get(curr[curr.length-1] + '-' + move) || objectMap.get(move + '-' + curr[curr.length-1])
+                    if(move == endNode && !foundSet.has(curr.concat(move).toString())){
+                        foundPaths.push({path: curr.concat(move), degredationVariance: Math.abs(edge.data + closestKey - root.data)})
+                        foundSet.add(curr.concat(move).toString())
+                    }else{
+                        if(open.has(edge.data + closestKey)) {
+                            open.get(edge.data + closestKey).push(curr.concat(move))
+                        }else{
+                            open.set(edge.data + closestKey, [curr.concat(move)])
+                        }
+                    }
+                }
+                iterations++
+            }
+            //console.log(open)
+            let keys = Array.from(open.keys())
+            closestKey = keys[0]
+            for(let x = 0; x < keys.length; x++) {
+                if(Math.abs(root.data - keys[x]) < Math.abs(root.data - closestKey)){
+                    closestKey = keys[x]
+                }
+            }
+            if(open.get(closestKey) == undefined){
+                debugger
+            }
+            curr = open.get(closestKey).pop()
+            if(open.get(closestKey).length == 0){
+                open.delete(closestKey)
+            }
+            
+        }       
+        //this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
+        this.set('heuristicPaths', foundPaths.sort(function(a, b) { return a.degredationVariance - b.degredationVariance}))
+        this.setHeuristicStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
+    },
+
+    getAdjacencyList(edges) {
+        let list = new Array(this.numNodes)
+        for(const edge of edges){
+            console.log(edge)
+            if(list[parseInt(edge.source)] == undefined){
+                list[parseInt(edge.source)] = new Set()
+            }    
+            
+            if(list[parseInt(edge.target)] == undefined){
+                list[parseInt(edge.target)] = new Set()
+            }
+            list[parseInt(edge.source)].add(parseInt(edge.target))
+            list[parseInt(edge.target)].add(parseInt(edge.source))
+        }
+        return list 
     },
 
     /* 
@@ -118,30 +212,19 @@ export default Component.extend({
         for(const path of allPaths){
             let computedPath = []
             let firstPath = objectMap.get(path[0] + '-' + path[1]) || objectMap.get(path[1] + '-' + path[0])
-            for(let i = 0; i< firstPath.data.length; i++){
-                for(let j in firstPath.data[i].metrics){
-                    for(let k in firstPath.data[i].metrics[j]){
-                        if(firstPath.data[i].metrics[j][k] != 0 && root) {
-                            //firstPath.data[i].metrics[j][k] = firstPath.data[i].metrics[j][k]/root.data[i].metrics[j][k]  || 0
-                        }
-                    }
-                }
+            let sum = 0
+            for(let i = 0; i< firstPath.length; i++){
+                sum += firstPath.data
             }
             computedPath.push({
                 'label': path[0], 
-                'data': firstPath
+                'data': firstPath.data,
+                'sum': sum
             })
-            for(let i = 1; i <path.length; i++){
+
+            for(let i = 1; i < path.length; i++){
                 let nextPath =  objectMap.get(path[i-1] + '-' + path[i]) || objectMap.get(path[i] + '-' + path[i-1])
-                for(let i = 0; i< nextPath.data.length; i++){
-                    for(let j in nextPath.data[i].metrics){
-                        for(let k in nextPath.data[i].metrics[j]){
-                            if(nextPath.data[i].metrics[j][k] != 0 && root && root.data[i].metrics[j][k] != 0) {
-                                //nextPath.data[i].metrics[j][k] = nextPath.data[i].metrics[j][k]/root.data[i].metrics[j][k]
-                            }
-                        }
-                    }
-                }
+                
                 computedPath.push({
                     'label': path[i], 
                     'data': nextPath
@@ -155,7 +238,12 @@ export default Component.extend({
     },
 
     createEvent() {
-        
+        let allPaths = this.get('allPaths')
+        let root = this.get('root')
+
+        for(let i = 0; i<allPaths.length; i++){
+            debugger
+        }
     },
 
     setStats (stats) {
@@ -165,13 +253,19 @@ export default Component.extend({
             this.set('pathStats', stats)
         }
     },
+    setHeuristicStats (stats) {
+        let old = this.get('hPathStats')
+        this.set('computeToast', true)
+        if(old != stats){
+            this.set('hPathStats', stats)
+        }
+    },
     init() {
         this._super(...arguments)
         this.generateNodes()
         this.generateEdges()
         this.genAllPaths()
-        this.genComputedPaths()
-        
+        this.genBestPaths()
     },
 
     actions: {
@@ -198,8 +292,6 @@ export default Component.extend({
                 this.genAllPaths()
                 this.genComputedPaths()
             }
-            
-            
         },
         toggleRecompute() {
             this.genAllPaths()

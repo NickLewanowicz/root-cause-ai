@@ -35,25 +35,44 @@
                 {{visjs-edge from=edge.source to=edge.target color='#ff0000'}}
                 {{/each}}
             {{/visjs-network}}
-            {{#paper-list class="scroll-div flex-30"}}
-            {{#paper-subheader}}{{allPaths.length}} Paths from '{{root.source}}' to '{{root.target}}' ({{pathStats.iterations}}:{{pathStats.time}}s){{/paper-subheader}}
-            {{#each computedPaths as |path|}}
+            {{#paper-list class="scroll-div flex-20"}}
+            {{#paper-subheader}}{{allPaths.length}} Paths from '{{root.source}}' to '{{root.target}}' <br/>{{pathStats.iterations}} Iterations in {{pathStats.time}}s{{/paper-subheader}}
+            {{#each allPaths as |path|}}
                 {{#paper-item onClick=(action 'togglePathDetails' path) class="md-3-line"}}
 
                 <div class="md-list-item-text">
                     <p>
-                    {{#each path as |item i|}}
-
-                    {{item.label}}
-                    {{#if (not (eq i (sub path.length 1)))}}
+                    {{#each path.path as |item i|}}
+                    {{item}}
+                    {{#if (not (eq i (sub path.path.length 1)))}}
                      ↔ 
                     {{/if}}
-                    {{/each}}
+                    {{/each}}<br/>
+                    Degredation Variance: {{round path.degredationVariance decimals=3}}
                     </p>
                 </div>
                 {{/paper-item}}
             {{/each}}
-        {{/paper-list}}
+            {{/paper-list}}
+            {{#paper-list class="scroll-div flex-20"}}
+            {{#paper-subheader}}{{heuristicPaths.length}} Paths from '{{root.source}}' to '{{root.target}}' <br/> {{hPathStats.iterations}} iterations in {{hPathStats.time}}s{{/paper-subheader}}
+            {{#each heuristicPaths as |path|}}
+                {{#paper-item onClick=(action 'togglePathDetails' path) class="md-3-line"}}
+
+                <div class="md-list-item-text">
+                    <p>
+                    {{#each path.path as |item i|}}
+                    {{item}}
+                    {{#if (not (eq i (sub path.path.length 1)))}}
+                     ↔ 
+                    {{/if}}
+                    {{/each}}<br/>
+                    Degredation Variance: {{round path.degredationVariance decimals=3}}
+                    </p>
+                </div>
+                {{/paper-item}}
+            {{/each}}
+            {{/paper-list}}
         </div>
         {{paper-divider}}
 
