@@ -104,17 +104,12 @@ export default Component.extend({
                 curr = null
             }
         }
-        console.log(pathObjects)
+
         this.setStats({'time': (moment.now() - startTime) /1000, 'iterations': iterations})
         this.set('allPaths', pathObjects.sort(function(a, b) { return a.degredationVariance - b.degredationVariance}))
     },
-    possibleMoves(curr) {
-        
-    },
+
     calcDegredation(path){
-        const root = this.get('root')
-        const startNode = root.source
-        const endNode = root.target
         const objectMap = this.get('objectMap')
         let degredation = 0
         for(let i = 1; i < path.length; i++){
@@ -123,6 +118,7 @@ export default Component.extend({
         }
         return degredation
     },
+
     genBestPaths() {
         const startTime = moment.now()
         let iterations = 0
@@ -136,10 +132,11 @@ export default Component.extend({
 
         let open = new Map([[0, [[startNode]]]])
         let closestKey = 0
-        let closed = new Set()
+        //#TODO: Add found paths to list so we dont double count
+        //let closed = new Set()
         let foundPaths = []
         let foundSet = new Set()
-        let paths = []
+        //let paths = []
 
         let curr = [startNode] //Not sure if needed
         while (iterations<iterationCap)  {
@@ -170,9 +167,7 @@ export default Component.extend({
                     closestKey = keys[x]
                 }
             }
-            if(open.get(closestKey) == undefined){
-                debugger
-            }
+
             curr = open.get(closestKey).pop()
             if(open.get(closestKey).length == 0){
                 open.delete(closestKey)
@@ -187,7 +182,6 @@ export default Component.extend({
     getAdjacencyList(edges) {
         let list = new Array(this.numNodes)
         for(const edge of edges){
-            console.log(edge)
             if(list[parseInt(edge.source)] == undefined){
                 list[parseInt(edge.source)] = new Set()
             }    
@@ -209,7 +203,6 @@ export default Component.extend({
     genComputedPaths() {
         const allPaths = this.get('allPaths')
         const objectMap = this.get('objectMap')
-        const root = this.get('root')
         let computedPaths = []
 
         for(const path of allPaths){
@@ -239,14 +232,14 @@ export default Component.extend({
         }
         this.set('computedPaths', computedPaths) 
     },
-
+    //#TODO
     createEvent() {
-        let allPaths = this.get('allPaths')
-        let root = this.get('root')
+        //let allPaths = this.get('allPaths')
+       //let root = this.get('root')
 
-        for(let i = 0; i<allPaths.length; i++){
-            debugger
-        }
+        // for(let i = 0; i<allPaths.length; i++){
+
+        // }
     },
 
     setStats (stats) {
