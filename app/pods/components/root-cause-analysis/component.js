@@ -290,8 +290,9 @@ export default Component.extend({
             }
         },
         toggleRecompute() {
-            this.genAllPaths()
-            this.genBestPaths()
+            //Todo: Fix Bug
+            // this.genAllPaths()
+            // this.genBestPaths()
         },
         togglePathDetails(selectedItem) {
             this.set('selectedItem', selectedItem)
@@ -304,10 +305,11 @@ export default Component.extend({
             return edge
         },
         regenGraph() {
-            this.generateNodes()
-            this.generateEdges()
-            this.genAllPaths()
-            this.genComputedPaths()
+            // Todo: Fix bug
+            // this.generateNodes()
+            // this.generateEdges()
+            // this.genAllPaths()
+            // this.genComputedPaths()
         }
         
     }
